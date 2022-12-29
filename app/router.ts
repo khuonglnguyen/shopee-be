@@ -7,5 +7,6 @@ export default (app: Application) => {
   router.get('/user/:id', controller.user.getById);
   router.get('/user', controller.user.list);
   router.post('/user/create', controller.user.create);
+  router.put('/user/edit/:id', controller.user.edit);
   router.delete('/user/delete/:id', controller.user.delete);
 };
