@@ -24,7 +24,7 @@ module.exports = (app) => {
 
   User.findById = async function (id) {
     return await this.findOne({
-      attributes: ["id", "name"],
+      attributes: ["id", "name", "age", "createdAt", "updatedAt"],
       where: {
         id: id,
       },
