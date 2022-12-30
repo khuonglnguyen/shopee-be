@@ -45,8 +45,18 @@ module.exports = (app) => {
       // });
   };
 
-  User.getAll = async function () {
-    return await this.findAll();
+  User.getAll = async function(pageIndex: number, pageSize: number) {
+    try {
+      return await this.findAndCountAll({
+        offset: pageIndex,
+        limit: pageSize,
+      });
+    } catch (error) {
+      return {
+        status: false,
+        error: error
+      };
+    }
   };
 
   User.delete = async function (id) {
