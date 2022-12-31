@@ -24,6 +24,7 @@
   "dependencies": {
     "dotenv": "^16.0.3",
     "egg": "^2.6.1",
+    "egg-router-plus": "^2.0.0",
     "egg-scripts": "^2.6.0",
     "egg-security": "^2.11.0",
     "egg-sequelize": "^6.0.0",
