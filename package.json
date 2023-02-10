@@ -40,6 +40,9 @@
     "egg-ci": "^2.1.0",
     "egg-bin": "^4.11.0",
     "egg-mock": "^3.16.0",
+    "egg-swagger-doc": "^2.3.2",
+    "koa2-swagger-ui": "^5.1.0",
+    "swagger-jsdoc": "*",
     "eslint": "^8.0.0",
     "eslint-config-egg": "^12.0.0",
     "typescript": "^4.0.0"
