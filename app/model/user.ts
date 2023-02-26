@@ -4,6 +4,8 @@ module.exports = (app) => {
   const User = app.model.define("user", {
     id: { type: INTEGER, primaryKey: true, autoIncrement: true },
     name: STRING(30),
+    email: STRING(50),
+    password: STRING(50),
     age: INTEGER,
   });
 
@@ -78,6 +80,16 @@ module.exports = (app) => {
         return false;
       }
     );
+  };
+
+  User.login = async function (email, password) {
+    return await this.findOne({
+      attributes: ["id", "name", "age", "createdAt", "updatedAt"],
+      where: {
+        email: email,
+        password: password,
+      },
+    });
   };
 
   // don't use arraw function
