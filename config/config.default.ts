@@ -23,49 +23,62 @@ export default (appInfo: EggAppInfo) => {
   // add your egg config in here
   config.middleware = [];
 
+  config.jwt = {
+    secret: '123456',
+  };
+
   // add your special config in here
   const bizConfig = {
     sourceUrl: `https://github.com/eggjs/examples/tree/master/${appInfo.name}`,
   };
 
   config.security = {
-    csrf: {
+   csrf: {
       enable: false,
+      ignoreJSON: true,
     },
+    // Whitelist of allowed access interfaces
+    domainWhiteList: [ 'http://localhost:8080' ],
+  };
+
+  // Cross-domain configuration
+  config.cors = {
+    origin: '*',
+    allowMethods: 'GET,HEAD,PUT,POST,DELETE,PATCH',
   };
 
   // egg-swagger-doc 配置信息
-config.swaggerdoc = {
-  dirScanner: './app/controller',
-  apiInfo: {
-    title: 'egg-swagger',
-    description: 'swagger-ui for egg',
-    version: '1.0.0',
-  },
-  schemes: ['http', 'https'],
-  consumes: ['application/json'],
-  produces: ['application/json'],
-  securityDefinitions: {
-    // apikey: {
-    //   type: 'apiKey',
-    //   name: 'clientkey',
-    //   in: 'header',
-    // },
-    // oauth2: {
-    //   type: 'oauth2',
-    //   tokenUrl: 'http://petstore.swagger.io/oauth/dialog',
-    //   flow: 'password',
-    //   scopes: {
-    //     'write:access_token': 'write access_token',
-    //     'read:access_token': 'read access_token',
-    //   },
-    // },
-  },
-  enableSecurity: false,
-  // enableValidate: true,
-  routerMap: false,
-  enable: true,
-}
+  config.swaggerdoc = {
+    dirScanner: './app/controller',
+    apiInfo: {
+      title: 'egg-swagger',
+      description: 'swagger-ui for egg',
+      version: '1.0.0',
+    },
+    schemes: ['http', 'https'],
+    consumes: ['application/json'],
+    produces: ['application/json'],
+    securityDefinitions: {
+      // apikey: {
+      //   type: 'apiKey',
+      //   name: 'clientkey',
+      //   in: 'header',
+      // },
+      // oauth2: {
+      //   type: 'oauth2',
+      //   tokenUrl: 'http://petstore.swagger.io/oauth/dialog',
+      //   flow: 'password',
+      //   scopes: {
+      //     'write:access_token': 'write access_token',
+      //     'read:access_token': 'read access_token',
+      //   },
+      // },
+    },
+    enableSecurity: false,
+    // enableValidate: true,
+    routerMap: false,
+    enable: true,
+  }
 
   // the return config will combines to EggAppConfig
   return {

@@ -76,4 +76,26 @@ export default class UserController extends Controller {
     const result = await this.ctx.model.User.delete(Number(id));
     ctx.helper.response.success({ ctx, result });
   }
+
+ /**
+   * @router post /api/v1/user/login Login
+   * @summary Login
+   * @description Login
+   * @request body indexLoginJsonBody
+   * @response 200 indexJsonBody
+   */
+  public async login() {
+    const { ctx, app } = this;
+    const {email, password} = ctx.request.body;
+    const user = await this.ctx.model.User.login(email, password);
+    if (!user) {
+      ctx.helper.response.error({ ctx, message: 'Email or Password is incorrect' });
+      return false;
+    }else{
+      const token = app.jwt.sign({
+        email: user.email,
+      }, app.config.jwt.secret);
+      ctx.helper.response.success({ ctx, data: {jwt: token} });
+    }
+  }
 }
