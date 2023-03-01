@@ -1,4 +1,10 @@
 import { Controller } from "egg";
+
+// Verify user registration parameters
+const vUser = {
+  email: { type: 'string', required: true },
+  password: { type: 'string', required: true },
+};
 /**
  * @Controller V1/User
  */
@@ -7,6 +13,7 @@ export default class UserController extends Controller {
    * @router get /api/v1/users Get List User
    * @summary Get List User
    * @description Get List User
+   * @request header string Authorization
    * @request query integer pageIndex
    * @request query integer pageSize
    * @response 200 indexJsonBody
@@ -23,6 +30,7 @@ export default class UserController extends Controller {
    * @router get /api/v1/users/{id} Get By Id
    * @summary Get By Id
    * @description Get By Id
+   * @request header string Authorization
    * @request path string id
    * @response 200 indexJsonBody
    */
@@ -51,6 +59,7 @@ export default class UserController extends Controller {
    * @router patch /api/v1/users/{id} Update
    * @summary Update
    * @description Update
+   * @request header string Authorization
    * @request path string id
    * @request body indexCreateUserJsonBody
    * @response 200 indexCreateUserJsonBody
@@ -67,6 +76,7 @@ export default class UserController extends Controller {
    * @router delete /api/v1/users/{id} Delete
    * @summary Delete
    * @description Delete
+   * @request header string Authorization
    * @request path string id
    * @response 200 indexJsonBody
    */
@@ -86,16 +96,17 @@ export default class UserController extends Controller {
    */
   public async login() {
     const { ctx, app } = this;
+    console.log(app);
+    
+    // Receive and verify parameters
+    ctx.validate(vUser, ctx.request.body);
     const {email, password} = ctx.request.body;
-    const user = await this.ctx.model.User.login(email, password);
-    if (!user) {
-      ctx.helper.response.error({ ctx, message: 'Email or Password is incorrect' });
+    const data = await ctx.service.user.login(email, password);
+    if (!data) {
+      ctx.helper.response.error({ ctx, message: 'Email or Password is incorrect', code: 401 });
       return false;
     }else{
-      const token = app.jwt.sign({
-        email: user.email,
-      }, app.config.jwt.secret);
-      ctx.helper.response.success({ ctx, data: {jwt: token} });
+      ctx.helper.response.success({ ctx, data: data });
     }
   }
 }

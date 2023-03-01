@@ -27,6 +27,10 @@ export default (appInfo: EggAppInfo) => {
     secret: '123456',
   };
 
+  config.bcrypt = {
+    saltRounds: 10,
+  };
+
   // add your special config in here
   const bizConfig = {
     sourceUrl: `https://github.com/eggjs/examples/tree/master/${appInfo.name}`,
@@ -64,15 +68,15 @@ export default (appInfo: EggAppInfo) => {
       //   name: 'clientkey',
       //   in: 'header',
       // },
-      // oauth2: {
-      //   type: 'oauth2',
-      //   tokenUrl: 'http://petstore.swagger.io/oauth/dialog',
-      //   flow: 'password',
-      //   scopes: {
-      //     'write:access_token': 'write access_token',
-      //     'read:access_token': 'read access_token',
-      //   },
-      // },
+      oauth2: {
+        type: 'oauth2',
+        tokenUrl: 'http://petstore.swagger.io/oauth/dialog',
+        flow: 'password',
+        scopes: {
+          'write:access_token': 'write access_token',
+          'read:access_token': 'read access_token',
+        },
+      },
     },
     enableSecurity: false,
     // enableValidate: true,
