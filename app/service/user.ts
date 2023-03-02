@@ -30,4 +30,26 @@ export default class User extends Service {
       return { email, name, token };
     }
   }
+
+  public async rigist(name: string, email: string,  age: number, password: string) {
+    const hash = bcrypt.hashSync(password, this.config.bcrypt.saltRounds);
+    const user = await this.ctx.model.User.add(name, email, age, hash);
+    return user;
+  }
+  
+  public async getTokenInfo(jwt, auth, secret) {
+    // 判断请求头是否包含token
+    if (
+      auth.authorization &&
+      auth.authorization.split(' ')[0] === 'Bearer'
+    ) {
+      const token = auth.authorization.split(' ')[1];
+      let decode = '';
+      if (token) {
+        decode = jwt.verify(token, secret);
+      }
+      return decode;
+    }
+    return;
+  }
 }
