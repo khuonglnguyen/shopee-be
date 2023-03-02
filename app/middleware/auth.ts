@@ -1,4 +1,4 @@
-import { Context } from 'egg';
+import { Context } from "egg";
 
 // =============
 // Authentication Module
@@ -6,22 +6,22 @@ import { Context } from 'egg';
 
 export default (): any => {
   return async (ctx: Context, next: () => Promise<any>) => {
-    // Determine whether the current user
-    console.log(ctx.user);
-    if (!ctx.user || !ctx.user.sid || !ctx.user.id) {
-      throw {
-        status: 401,
-        message: 'Login invalid!',
-      };
-    }
-    // Is the user login valid?
-    if (!ctx.isAuthenticated()) {
-      throw {
-        status: 401,
-        message: 'Login invalid!',
-      };
-    }
+    const { jwt: { secret } } = ctx.app.config;
 
-    await next();
+    const user = await ctx.service.user.getTokenInfo(
+      ctx.app.jwt,
+      ctx.headers,
+      secret
+    );
+
+    if (!user) {
+      ctx.helper.response.error({
+        ctx,
+        code: 401,
+        message: "Login invalid!",
+      });
+    } else {
+      await next();
+    }
   };
 };

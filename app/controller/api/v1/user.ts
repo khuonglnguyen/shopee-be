@@ -50,8 +50,8 @@ export default class UserController extends Controller {
    */
   public async create() {
     const { ctx } = this;
-    const { name, age } = ctx.request.body;
-    const data = await this.ctx.model.User.add(name, age);
+    const { name, email, age, password } = ctx.request.body;
+    const data = await ctx.service.user.rigist(name, email, age, password);
     ctx.helper.response.success({ ctx, data });
   }
 
@@ -95,9 +95,7 @@ export default class UserController extends Controller {
    * @response 200 indexJsonBody
    */
   public async login() {
-    const { ctx, app } = this;
-    console.log(app);
-    
+    const { ctx } = this;
     // Receive and verify parameters
     ctx.validate(vUser, ctx.request.body);
     const {email, password} = ctx.request.body;

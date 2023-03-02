@@ -9,12 +9,12 @@ module.exports = (app) => {
     age: INTEGER,
   });
 
-  User.add = async function (name: string, age: number) {
+  User.add = async function (name: string, email: string, age: number, password: string) {
     return await this.create({
       name: name,
-      age: age,
-      created_at: Date.now(),
-      updated_at: Date.now(),
+      email: email,
+      password: password,
+      age: age
     }).then(function (result) {
       if (result) {
         return true;
