@@ -9,7 +9,7 @@ export default class User extends Service {
     const user = await this.ctx.model.User.findOne({
       where: { email },
     });
-    if (!user) return {};
+    if (!user) return false;
 
     const match = await bcrypt.compare(password, user.password);
     if (match) {
