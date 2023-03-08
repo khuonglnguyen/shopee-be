@@ -22,7 +22,9 @@
     "clean": "ets clean"
   },
   "dependencies": {
+    "async-busboy": "^1.1.0",
     "bcryptjs": "^2.4.3",
+    "cloudinary": "^1.35.0",
     "dotenv": "^16.0.3",
     "egg": "^2.6.1",
     "egg-cors": "^2.2.3",
@@ -32,7 +34,10 @@
     "egg-security": "^2.11.0",
     "egg-sequelize": "^6.0.0",
     "egg-validate": "^2.0.2",
-    "mysql2": "^2.3.3"
+    "mysql2": "^2.3.3",
+    "path": "^0.12.7",
+    "stream": "0.0.2",
+    "util": "^0.12.5"
   },
   "devDependencies": {
     "@types/mocha": "^2.2.40",
