@@ -84,6 +84,12 @@ export default (appInfo: EggAppInfo) => {
     enable: true,
   }
 
+  config.cloudinary = {
+    cloud_name: 'nonefd',
+    api_key: '457141667853418',
+    api_secret: '6QTXwDrXNFTTHrhg2XajW-nJbxk'
+  };
+
   // the return config will combines to EggAppConfig
   return {
     ...config,
