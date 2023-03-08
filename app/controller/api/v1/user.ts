@@ -101,7 +101,7 @@ export default class UserController extends Controller {
     const {email, password} = ctx.request.body;
     const data = await ctx.service.user.login(email, password);
     if (!data) {
-      ctx.helper.response.error({ ctx, message: 'Email or Password is incorrect', code: 401 });
+      ctx.helper.response.success({ ctx, message: 'Email or Password is incorrect', code: 401 });
       return false;
     }else{
       ctx.helper.response.success({ ctx, data: data });
