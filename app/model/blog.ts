@@ -1,11 +1,12 @@
 module.exports = (app) => {
-  const { STRING, INTEGER } = app.Sequelize;
+  const { STRING, INTEGER, DATE, Op } = app.Sequelize;
 
   const Blog = app.model.define("blog", {
     id: { type: INTEGER, primaryKey: true, autoIncrement: true },
     title: STRING(255),
     thumbnail: STRING(255),
     content: STRING(),
+    deletedAt: DATE,
     createdBy: { type: INTEGER, references: "users", referencesKey: "id" },
   });
 
@@ -31,31 +32,47 @@ module.exports = (app) => {
 
   Blog.findById = async function (id) {
     return await this.findOne({
-      attributes: ["id", "title", "thumbnail", "createdBy", "createdAt", "updatedAt" ],
+      attributes: [
+        "id",
+        "title",
+        "content",
+        "thumbnail",
+        "createdBy",
+        "createdAt",
+        "updatedAt",
+      ],
       where: {
         id: id,
+        deletedAt: {
+          [Op.eq]: null
+        }
       },
     });
   };
 
-  // Blog.edit = async function (id: number, name: string, age: number) {
-  //   return await this.update(
-  //     {
-  //       name: name,
-  //       age: age ?? 1,
-  //       created_at: Date.now(),
-  //       updated_at: Date.now(),
-  //     },
-  //     { where: { id: id } }
-  //   );
-  //   // .success(function () {
-  //   //   return true;
-  //   // })
-  //   // .error(function (err) {
-  //   //   console.log(err);
-  //   //   return false;
-  //   // });
-  // };
+  Blog.edit = async function (
+    id: number,
+    title: string,
+    thumbnail: string,
+    content: string
+  ) {
+    return await this.update(
+      {
+        ...(title && {title: title}),
+        ...(thumbnail && {thumbnail: thumbnail}),
+        ...(content && {content: content}),
+        updated_at: Date.now(),
+      },
+      { where: { id: id } }
+    );
+    // .success(function () {
+    //   return true;
+    // })
+    // .error(function (err) {
+    //   console.log(err);
+    //   return false;
+    // });
+  };
 
   Blog.getAll = async function (pageIndex: number, pageSize: number) {
     try {
@@ -71,26 +88,23 @@ module.exports = (app) => {
     }
   };
 
-  // Blog.delete = async function (id) {
-  //   return await this.destroy({
-  //     where: {
-  //       id: id,
-  //     },
-  //   }).then(
-  //     function (rowDeleted) {
-  //       // rowDeleted will return number of rows deleted
-  //       if (rowDeleted === 1) {
-  //         return true;
-  //       } else {
-  //         return false;
-  //       }
-  //     },
-  //     function (err) {
-  //       console.log(err);
-  //       return false;
-  //     }
-  //   );
-  // };
+  Blog.delete = async function (
+    id: number
+  ) {
+    return await this.update(
+      {
+        deletedAt: Date.now(),
+      },
+      { where: { id: id } }
+    );
+    // .success(function () {
+    //   return true;
+    // })
+    // .error(function (err) {
+    //   console.log(err);
+    //   return false;
+    // });
+  };
 
   // don't use arraw function
   // User.prototype.logSignin = async function() {
