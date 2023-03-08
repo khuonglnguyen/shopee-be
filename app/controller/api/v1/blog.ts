@@ -1,10 +1,5 @@
 import { Controller } from "egg";
-const util = require("util");
-const fs = require("fs");
-const stream = require("stream");
-const pipeline = util.promisify(stream.pipeline);
 import asyncBusboy from "async-busboy";
-const cloudinary = require("cloudinary").v2;
 
 /**
  * @Controller V1/User
@@ -22,9 +17,10 @@ export default class BlogController extends Controller {
     const { ctx } = this;
     const { pageIndex, pageSize } = ctx.request.query;
     let data = await ctx.service.blog.getAll(
-      Number(pageIndex ?? 1), Number(pageSize ?? 10)
+      Number(pageIndex ?? 1),
+      Number(pageSize ?? 10)
     );
-    data = { list: data.rows, total: data.count, pageIndex, pageSize }
+    data = { list: data.rows, total: data.count, pageIndex, pageSize };
     ctx.helper.response.success({ ctx, data });
   }
 
@@ -39,9 +35,7 @@ export default class BlogController extends Controller {
   public async show() {
     const { ctx } = this;
     const { id } = ctx.params;
-    const data = await ctx.service.blog.get(
-      id
-    );
+    const data = await ctx.service.blog.get(id);
     ctx.helper.response.success({ ctx, data });
   }
 
@@ -59,29 +53,18 @@ export default class BlogController extends Controller {
       fields: { title, content, createdBy },
     } = await asyncBusboy(ctx.req);
     try {
-      const path = `./images/${files[0].filename}`;
-      await pipeline(files[0], fs.createWriteStream(path));
-
-      cloudinary.config(this.config.cloudinary);
-
-      await cloudinary.uploader.upload(path, async (error, result) => {
-        if (result) {
-          await ctx.service.blog.add(
-            title,
-            result.url,
-            content,
-            createdBy
-          );
-        } else {
-          ctx.helper.response.error({ ctx, message: "Error: " + error });
-          return;
-        }
-      });
-
-      // Remove image local
-      await fs.unlinkSync(path);
-
-      ctx.helper.response.success({ ctx });
+      const result = await ctx.service.blog.add(
+        title,
+        files[0].filename,
+        content,
+        createdBy,
+        files[0]
+      );
+      if (result) {
+        ctx.helper.response.success({ ctx });
+      }else{
+        ctx.helper.response.error({ ctx });
+      }
     } catch (error) {
       ctx.helper.response.error({ ctx, message: "Error: " + error });
     }
@@ -96,13 +79,30 @@ export default class BlogController extends Controller {
    * @request body indexCreateUserJsonBody
    * @response 200 indexCreateUserJsonBody
    */
-  // public async update() {
-  //   const { ctx } = this;
-  //   const { id } = ctx.params;
-  //   const { name, age } = ctx.request.body;
-  //   const data = await this.ctx.model.User.edit(Number(id), name, age);
-  //   ctx.helper.response.success({ ctx, data });
-  // }
+  public async update() {
+    const { ctx } = this;
+    const { id } = ctx.params;
+    const {
+      files,
+      fields: { title, content },
+    } = await asyncBusboy(ctx.req);
+    try {
+      const result = await ctx.service.blog.update(
+        id,
+        title,
+        files[0]?.filename || undefined,
+        content,
+        files[0] || undefined
+      );
+      if (result) {
+        ctx.helper.response.success({ ctx });
+      }else{
+        ctx.helper.response.error({ ctx });
+      }
+    } catch (error) {
+      ctx.helper.response.error({ ctx, message: "Error: " + error });
+    }
+  }
 
   /**
    * @router delete /api/v1/users/{id} Delete
@@ -112,10 +112,10 @@ export default class BlogController extends Controller {
    * @request path string id
    * @response 200 indexJsonBody
    */
-  // public async destroy() {
-  //   const { ctx } = this;
-  //   const { id } = ctx.params;
-  //   const result = await this.ctx.model.User.delete(Number(id));
-  //   ctx.helper.response.success({ ctx, result });
-  // }
+  public async destroy() {
+    const { ctx } = this;
+    const { id } = ctx.params;
+    const result = await this.ctx.model.Blog.delete(Number(id));
+    ctx.helper.response.success({ ctx, result });
+  }
 }
